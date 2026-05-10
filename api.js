@@ -5,6 +5,17 @@
 const axios = require('axios');
 const { API_PATH, BASE_URL, ADMIN_TOKEN } = require('./config');
 
+const customerUrl = axios.create({
+  baseURL: `${BASE_URL}/api/livejs/v1/customer/${API_PATH}`,
+});
+
+const adminUrl = axios.create({
+  baseURL: `${BASE_URL}/api/livejs/v1/admin/${API_PATH}`,
+  headers: {
+    Authorization: ADMIN_TOKEN // 統一設定 Token，以後不用再手動加了！
+  }
+});
+
 // ========== 客戶端 API ==========
 
 /**
@@ -14,6 +25,8 @@ const { API_PATH, BASE_URL, ADMIN_TOKEN } = require('./config');
 async function fetchProducts() {
   // 請實作此函式
   // 回傳 response.data.products
+  const response = await customerUrl.get('/products');
+  return response.data.products;
 }
 
 /**
@@ -22,6 +35,9 @@ async function fetchProducts() {
  */
 async function fetchCart() {
   // 請實作此函式
+  // 回傳 response.data
+  const response = await customerUrl.get('/carts');
+  return response.data;
 }
 
 /**
@@ -32,6 +48,13 @@ async function fetchCart() {
  */
 async function addToCart(productId, quantity) {
   // 請實作此函式
+  const response = await customerUrl.post('/carts', {
+    data: {
+      productId: productId,
+      quantity: quantity,
+    }
+  });
+  return response.data;
 }
 
 /**
@@ -42,6 +65,13 @@ async function addToCart(productId, quantity) {
  */
 async function updateCartItem(cartId, quantity) {
   // 請實作此函式
+  const response = await customerUrl.patch(`/carts`, {
+    data: {
+      id: cartId,
+      quantity: quantity,
+    }
+  });
+  return response.data;
 }
 
 /**
@@ -51,6 +81,8 @@ async function updateCartItem(cartId, quantity) {
  */
 async function deleteCartItem(cartId) {
   // 請實作此函式
+  const response = await customerUrl.delete(`/carts/${cartId}`);
+  return response.data;
 }
 
 /**
@@ -59,6 +91,8 @@ async function deleteCartItem(cartId) {
  */
 async function clearCart() {
   // 請實作此函式
+  const response = await customerUrl.delete('/carts');
+  return response.data;
 }
 
 /**
@@ -68,6 +102,12 @@ async function clearCart() {
  */
 async function createOrder(userInfo) {
   // 請實作此函式
+  const response = await customerUrl.post('/orders', {
+    data: {
+    user: userInfo,
+    }
+  });
+  return response.data;
 }
 
 // ========== 管理員 API ==========
@@ -86,6 +126,8 @@ async function createOrder(userInfo) {
  */
 async function fetchOrders() {
   // 請實作此函式
+  const response = await adminUrl.get('/orders');
+  return response.data.orders;
 }
 
 /**
@@ -96,6 +138,13 @@ async function fetchOrders() {
  */
 async function updateOrderStatus(orderId, isPaid) {
   // 請實作此函式
+  const response = await adminUrl.put(`/orders`, {
+    data: {
+      id: orderId,
+      paid: isPaid,
+    }
+  });
+  return response.data;
 }
 
 /**
@@ -105,6 +154,8 @@ async function updateOrderStatus(orderId, isPaid) {
  */
 async function deleteOrder(orderId) {
   // 請實作此函式
+  const response = await adminUrl.delete(`/orders/${orderId}`);
+  return response.data;
 }
 
 module.exports = {
